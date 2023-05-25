@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { PedidoService } from './pedido.service';
-import { CriaPedidoDTO } from './dto/CriaPedido.dto';
 import { UpdatePedidoDto } from './dto/update-pedido.dto';
+import { CriaPedidoDTO } from './dto/CriaPedido.dto';
 
 @Controller('pedidos')
 export class PedidoController {
@@ -10,9 +10,11 @@ export class PedidoController {
   @Post()
   async criaPedido(
     @Query('usuarioId') usuarioId: string,
+    @Body() dadosDoPedido: CriaPedidoDTO,
   ) {
     const pedidoCriado = await this.pedidoService.cadastraPedido(
-      usuarioId
+      usuarioId,
+      dadosDoPedido,
     )
     return pedidoCriado
   }
