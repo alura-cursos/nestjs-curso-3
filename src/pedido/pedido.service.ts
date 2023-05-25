@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CreatePedidoDto } from './dto/create-pedido.dto';
+import { CriaPedidoDTO } from './dto/CriaPedido.dto';
 import { UpdatePedidoDto } from './dto/update-pedido.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PedidoEntity } from './pedido.entity';
