@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CriaPedidoDTO } from './dto/CriaPedido.dto';
 import { AtualizaPedidoDto } from './dto/AtualizaPedido.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -30,6 +35,29 @@ export class PedidoService {
     return usuario;
   }
 
+  private trataDadosDoPedido(
+    dadosDoPedido: CriaPedidoDTO,
+    produtosRelacionados: ProdutoEntity[],
+  ) {
+    dadosDoPedido.itensPedido.forEach((itemPedido) => {
+      const produtoRelacionado = produtosRelacionados.find(
+        (produto) => produto.id === itemPedido.produtoId,
+      );
+
+      if (produtoRelacionado === undefined) {
+        throw new NotFoundException(
+          `O produto com id ${itemPedido.produtoId} não foi encontrado`,
+        );
+      }
+
+      if (itemPedido.quantidade > produtoRelacionado.quantidadeDisponivel) {
+        throw new BadRequestException(
+          `A quantidade solicitada (${itemPedido.quantidade}) é maior do que a disponível (${produtoRelacionado.quantidadeDisponivel}) para o produto ${produtoRelacionado.nome}.`,
+        );
+      }
+    });
+  }
+
   async cadastraPedido(usuarioId: string, dadosDoPedido: CriaPedidoDTO) {
     const usuario = await this.buscaUsuario(usuarioId);
 
@@ -45,20 +73,18 @@ export class PedidoService {
     pedidoEntity.status = StatusPedido.EM_PROCESSAMENTO;
     pedidoEntity.usuario = usuario;
 
+    this.trataDadosDoPedido(dadosDoPedido, produtosRelacionados);
+
     const itensPedidoEntidades = dadosDoPedido.itensPedido.map((itemPedido) => {
       const produtoRelacionado = produtosRelacionados.find(
         (produto) => produto.id === itemPedido.produtoId,
       );
 
-      if (produtoRelacionado === undefined) {
-        throw new NotFoundException(
-          `O produto com id ${itemPedido.produtoId} não foi encontrado`,
-        );
-      }
-
       const itemPedidoEntity = new ItemPedidoEntity();
-      itemPedidoEntity.produto = produtoRelacionado;
-      itemPedidoEntity.precoVenda = produtoRelacionado.valor;
+
+      itemPedidoEntity.produto = produtoRelacionado!;
+      itemPedidoEntity.precoVenda = produtoRelacionado!.valor;
+
       itemPedidoEntity.quantidade = itemPedido.quantidade;
       itemPedidoEntity.produto.quantidadeDisponivel -= itemPedido.quantidade;
       return itemPedidoEntity;
