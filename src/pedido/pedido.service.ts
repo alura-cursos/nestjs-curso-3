@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CriaPedidoDTO } from './dto/CriaPedido.dto';
-import { UpdatePedidoDto } from './dto/update-pedido.dto';
+import { AtualizaPedidoDto } from './dto/AtualizaPedido.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PedidoEntity } from './pedido.entity';
 import { In, Repository } from 'typeorm';
@@ -63,5 +63,11 @@ export class PedidoService {
     });
   }
 
+  async atualizaPedido(id: string, dto: AtualizaPedidoDto) {
+    const pedido = await this.pedidoRepository.findOneBy({ id });
 
+    Object.assign(pedido, dto);
+
+    return this.pedidoRepository.save(pedido);
+  }
 }
