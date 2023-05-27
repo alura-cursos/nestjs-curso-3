@@ -1,8 +1,10 @@
 import { Type } from 'class-transformer';
-import { ArrayMinSize, IsArray, IsInt, ValidateNested } from 'class-validator';
+import { ArrayMinSize, IsArray, IsInt, IsUUID, ValidateNested } from 'class-validator';
 
 
 class ItemPedidoDTO {
+  @IsUUID()
+  produtoId: string;
   @IsInt()
   quantidade: number;
 }
