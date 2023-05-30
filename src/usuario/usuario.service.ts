@@ -16,9 +16,7 @@ export class UsuarioService {
   async criaUsuario(dadosDoUsuario: CriaUsuarioDTO) {
     const usuarioEntity = new UsuarioEntity();
 
-    usuarioEntity.email = dadosDoUsuario.email;
-    usuarioEntity.senha = dadosDoUsuario.senha;
-    usuarioEntity.nome = dadosDoUsuario.nome;
+    Object.assign(usuarioEntity, dadosDoUsuario as UsuarioEntity);
 
     return this.usuarioRepository.save(usuarioEntity);
   }
@@ -48,7 +46,7 @@ export class UsuarioService {
     if (usuario === null)
       throw new NotFoundException('O usuário não foi encontrado.');
 
-    Object.assign(usuario, novosDados);
+    Object.assign(usuario, novosDados as UsuarioEntity);
 
     return this.usuarioRepository.save(usuario);
   }
