@@ -16,4 +16,13 @@ export class PedidoController {
     )
     return pedidoCriado
   }
+
+  @Get()
+  async obtemPedidosDeUsuario(@Query('usuarioId') usuarioId: string) {
+    const pedidos = await this.pedidoService.obtemPedidosDeUsuario(usuarioId);
+
+
+    return pedidos;
+  }
+
 }
