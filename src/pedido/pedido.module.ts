@@ -7,8 +7,10 @@ import { UsuarioEntity } from '../usuario/usuario.entity';
 import { ProdutoEntity } from '../produto/produto.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([PedidoEntity, UsuarioEntity, ProdutoEntity])],
+  imports: [
+    TypeOrmModule.forFeature([PedidoEntity, UsuarioEntity, ProdutoEntity]),
+  ],
   controllers: [PedidoController],
-  providers: [PedidoService]
+  providers: [PedidoService],
 })
-export class PedidoModule { }
+export class PedidoModule {}

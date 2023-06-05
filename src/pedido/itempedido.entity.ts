@@ -25,13 +25,12 @@ export class ItemPedidoEntity {
 
   @ManyToOne(() => PedidoEntity, (pedido) => pedido.itensPedido, {
     onDelete: 'CASCADE',
-    onUpdate: 'CASCADE'
+    onUpdate: 'CASCADE',
   })
   pedido: PedidoEntity;
 
   @ManyToOne(() => ProdutoEntity, (produto) => produto.itensPedido, {
-    cascade: ['update']
+    cascade: ['update'],
   })
-  produto: ProdutoEntity
-
+  produto: ProdutoEntity;
 }
