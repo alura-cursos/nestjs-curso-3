@@ -5,16 +5,20 @@ import {
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
-import { Request, Response } from 'express';
+import { HttpAdapterHost } from '@nestjs/core';
 
 @Catch()
-export class FiltroDeExcecaoHttp implements ExceptionFilter {
+export class FiltroDeExcecaoGlobal implements ExceptionFilter {
+  constructor(private adapterHost: HttpAdapterHost) {}
+
   catch(excecao: unknown, host: ArgumentsHost) {
     console.log(excecao);
 
+    const { httpAdapter } = this.adapterHost;
+
     const contexto = host.switchToHttp();
-    const resposta = contexto.getResponse<Response>();
-    const requisicao = contexto.getRequest<Request>();
+    const resposta = contexto.getResponse();
+    const requisicao = contexto.getRequest();
 
     const { status, body } =
       excecao instanceof HttpException
@@ -27,10 +31,10 @@ export class FiltroDeExcecaoHttp implements ExceptionFilter {
             body: {
               statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
               timestamp: new Date().toISOString(),
-              path: requisicao.url,
+              path: httpAdapter.getRequestUrl(requisicao),
             },
           };
 
-    resposta.status(status).json(body);
+    httpAdapter.reply(resposta, body, status);
   }
 }
